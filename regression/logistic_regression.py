@@ -7,6 +7,7 @@ import statsmodels.formula.api as smf
 from plotly import express
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import roc_auc_score
 
 spector_data = pd.DataFrame(sm.datasets.spector.load().data)
 sns.scatterplot(spector_data, x='GPA', y='GRADE')
@@ -21,6 +22,7 @@ print(model.summary())
 
 pred_prob = model.predict(spector_data)
 spector_data['stats_prob'] = pred_prob
+print("statsmodel ROC-AUC: ", roc_auc_score(spector_data['GRADE'], spector_data['stats_prob']))
 
 # build a model using sci-kit learn
 model = LogisticRegression()
@@ -28,6 +30,7 @@ model.fit(spector_data[['GPA']], spector_data['GRADE'])
 prediction = model.predict_proba(spector_data[['GPA']])
 pred_prob = prediction[:, 1]
 spector_data['ml_prob'] = pred_prob
+print("sklearn ROC-AUC: ", roc_auc_score(spector_data['GRADE'], spector_data['ml_prob']))
 
 # build a naive bayes model
 model = GaussianNB()
